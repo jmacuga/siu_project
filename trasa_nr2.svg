@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 507.99998 285.75"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="trasa_nr2.svg"
+   inkscape:export-filename="trasa_nr2.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="0.73512619"
+     inkscape:cx="843.39262"
+     inkscape:cy="490.392"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="2552"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="5.8208332"
+       spacingy="5.8208332"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+    <inkscape:grid
+       type="modular"
+       id="grid2"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="39.999998"
+       spacingy="40"
+       empcolor="#0047cb"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="0"
+       marginx="0"
+       marginy="0"
+       gapx="9.9999996"
+       gapy="10"
+       enabled="false"
+       visible="false" />
+    <inkscape:grid
+       id="grid3"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="0.99999996"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="false"
+       visible="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Warstwa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="display:inline;fill:#c8ffc8;fill-opacity:1;stroke:#fac8fa;stroke-width:0.191823;stroke-dasharray:none;stroke-opacity:1"
+       id="rect20"
+       width="508"
+       height="285.75"
+       x="-6.0159282e-14"
+       y="-0.26459" />
+    <rect
+       style="fill:#96c8c8;fill-opacity:1;stroke-width:0.334609"
+       id="rect9-2-2"
+       width="139.647"
+       height="17.4625"
+       x="302.70984"
+       y="250.29584" />
+    <rect
+       style="fill:#96c8c8;fill-opacity:1;stroke-width:0.246269"
+       id="rect9-2-1"
+       width="75.644348"
+       height="17.4625"
+       x="46.540176"
+       y="192.08749" />
+    <rect
+       style="fill:#fac8c8;fill-opacity:1;stroke-width:0.390336"
+       id="rect13-9"
+       width="215.37083"
+       height="17.4625"
+       x="93.133331"
+       y="64.029167" />
+    <rect
+       style="fill:#fac8c8;fill-opacity:1;stroke-width:0.192464"
+       id="rect13-9-1"
+       width="52.361"
+       height="17.4625"
+       x="389.99585"
+       y="168.80417" />
+    <rect
+       style="fill:#c8c8fa;fill-opacity:1;stroke-width:0.27816"
+       id="rect12-2-1"
+       width="17.4625"
+       height="122.2375"
+       x="302.65686"
+       y="145.52083" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Warstwa 2">
+    <rect
+       style="fill:#96c8c8;fill-opacity:1;stroke-width:0.348277"
+       id="rect9-2"
+       width="151.2887"
+       height="17.4625"
+       x="151.36815"
+       y="145.52083" />
+    <rect
+       style="fill:#c8c8fa;fill-opacity:1;stroke-width:0.348693"
+       id="rect12"
+       width="17.4625"
+       height="192.08749"
+       x="46.540176"
+       y="17.462494" />
+    <rect
+       style="fill:#c8c8fa;fill-opacity:1;stroke-width:0.210269"
+       id="rect12-2"
+       width="17.4625"
+       height="69.850006"
+       x="221.19168"
+       y="162.98332" />
+    <rect
+       style="fill:#c8c896;fill-opacity:1;stroke-width:0.237922;stroke-dasharray:none"
+       id="rect15"
+       width="17.462505"
+       height="98.954163"
+       x="442.35687"
+       y="-267.75833"
+       transform="scale(1,-1)" />
+    <path
+       style="fill:none;stroke:#96c896;stroke-width:17.5029;stroke-dasharray:none;stroke-opacity:1"
+       id="path18"
+       sodipodi:type="arc"
+       sodipodi:cx="-162.75571"
+       sodipodi:cy="122.31889"
+       sodipodi:rx="38.029736"
+       sodipodi:ry="37.816513"
+       sodipodi:start="1.5714422"
+       sodipodi:end="3.1463401"
+       sodipodi:arc-type="arc"
+       d="m -162.78027,160.1354 a 38.029736,37.816513 0 0 1 -26.93894,-11.1484 38.029736,37.816513 0 0 1 -11.0658,-26.84764"
+       sodipodi:open="true"
+       transform="rotate(-90)" />
+    <path
+       style="fill:none;stroke:#fac8fa;stroke-width:17.4501;stroke-dasharray:none;stroke-opacity:1"
+       id="path19"
+       sodipodi:type="arc"
+       sodipodi:cx="-63.774559"
+       sodipodi:cy="-64.021614"
+       sodipodi:rx="38.069183"
+       sodipodi:ry="37.549168"
+       sodipodi:start="1.5785574"
+       sodipodi:end="3.1415927"
+       sodipodi:arc-type="arc"
+       d="M -64.070014,-26.473577 A 38.069183,37.549168 0 0 1 -101.84374,-64.021614"
+       sodipodi:open="true"
+       transform="scale(-1)" />
+    <path
+       style="fill:#fac8fa;fill-opacity:1;stroke:none;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
+       d="M 407.45834,186.26666 314.32501,64.029165 h -23.28334 l 93.13334,122.237495 z"
+       id="path20"
+       sodipodi:nodetypes="ccccc" />
+    <rect
+       style="fill:#fa0096;fill-opacity:1;stroke-width:0.118325"
+       id="rect9"
+       width="17.462488"
+       height="17.4625"
+       x="221.19168"
+       y="145.52083" />
+  </g>
+</svg>
