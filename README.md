@@ -8,9 +8,6 @@ Kolory użyte do rysowania plansz:
 2. Pull the repo if needed
 `cd /siu_project`
 `git pull`
-3. Attach container as remote server for VSCode
-    1. Install Dev Containers extention
-    2. Select siu container
 4. Copy the board
 `cp /siu_project/trasa_nr1.png /roads.png`
 
@@ -18,3 +15,7 @@ Kolory użyte do rysowania plansz:
 
 `roslaunch turlesim siu.launch`
 `python siu_example.py`
+
+## How to attach container as remote server for VSCode
+    1. Install Dev Containers extention
+    2. Select siu container
