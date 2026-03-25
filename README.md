@@ -5,12 +5,12 @@ Kolory użyte do rysowania plansz:
 
 1. Run container
 `docker compose up -d`
-2. Pull the repo if needed
+2. Open desktop at http://localhost:6080
+3. Pull the repo if needed
 `cd /siu_project`
 `git pull`
 4. Copy the board
 `cp /siu_project/trasa_nr1.png /roads.png`
-
 ## Run 
 
 `roslaunch turlesim siu.launch`
