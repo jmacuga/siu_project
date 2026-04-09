@@ -19,3 +19,17 @@ Kolory użyte do rysowania plansz:
 ## How to attach container as remote server for VSCode
     1. Install Dev Containers extention
     2. Select siu container
+
+## TODO
+- [ ] uzupełnić kod:
+    - [ ] okresowe zapisywanie modelu
+    - [ ] rzejechać 1/2 okresu, skręcić, przejechać pozostałą 1/2
+- [ ] wytrenować model
+- [ ] zarejestrować najlepszy wynik
+    - [ ] w formie graficznej z zaznaczonymi krokami na planszy
+    - [ ] film z włączonym oraz z wyłączonymi znaczeniem położenia agenta.
+- [ ] eksperymenty
+    - [ ] 
+    - [ ] 
+- [ ] sprawozdanie
+    - [ ] opis eksperymentów
