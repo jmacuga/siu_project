@@ -9,7 +9,7 @@
    id="svg1"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    sodipodi:docname="trasa_nr2.svg"
-   inkscape:export-filename="trasa_nr2.png"
+   inkscape:export-filename="trasa_nr2.svg"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -35,7 +35,7 @@
      inkscape:window-x="2552"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer2">
+     inkscape:current-layer="layer1">
     <inkscape:grid
        id="grid1"
        units="px"
@@ -181,7 +181,7 @@
        sodipodi:open="true"
        transform="rotate(-90)" />
     <path
-       style="fill:none;stroke:#fac8fa;stroke-width:17.4501;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#fac896;stroke-width:17.45;stroke-dasharray:none;stroke-opacity:1"
        id="path19"
        sodipodi:type="arc"
        sodipodi:cx="-63.774559"
@@ -195,7 +195,7 @@
        sodipodi:open="true"
        transform="scale(-1)" />
     <path
-       style="fill:#fac8fa;fill-opacity:1;stroke:none;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#fac896;fill-opacity:1;stroke:none;stroke-width:1.32292;stroke-dasharray:none;stroke-opacity:1"
        d="M 407.45834,186.26666 314.32501,64.029165 h -23.28334 l 93.13334,122.237495 z"
        id="path20"
        sodipodi:nodetypes="ccccc" />
