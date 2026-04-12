@@ -1,5 +1,5 @@
 Kolory użyte do rysowania plansz:
-<img width="953" height="614" alt="kolory" src="https://github.com/user-attachments/assets/304284eb-6070-4ce3-826a-ac7a92ad28e5" />
+<img width="989" height="597" alt="kolory" src="https://github.com/user-attachments/assets/043eb122-950b-4b32-8194-b546100623b8" />
 
 ## Setup
 
