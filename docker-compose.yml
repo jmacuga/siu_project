@@ -1,10 +1,10 @@
 services:
   siu:
-    image: dudekw/siu-20.04
+    build: .
     container_name: siu
     ports:
       - "6080:80"
     volumes:
-      - .:/siu_project
+      - .:/root/siu_project:z
     environment:
       - RESOLUTION=1920x720

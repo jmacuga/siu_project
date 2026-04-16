@@ -124,6 +124,9 @@ class DqnSingle:
         step_cnt = 0
         train_cnt = 0
         for episode in range(self.EPISODES_MAX):  # ucz w epizodach treningowych
+            if episode%self.SAVE_MODEL_EVERY==0:
+                self.model.save(f"model/{self.xid()}_{episode}.tf")
+
             print(f"{len(self.replay_memory)} E{episode} ", end="")
             current_state = self.env.reset(tnames=[tname], sections=["random"])[
                 tname

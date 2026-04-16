@@ -91,7 +91,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
             elif sections[tidx]=='random':                  # żółw pozycjonowany w losowym segmencie jego trasy
                 # TODO STUDENCI
                 # losowanie obszaru proporcjonalnie do liczby planowanych żółwi w obszarze
-                sec_id=...
+                sec_id=np.random.randint(0, len(self.routes[agent.route]))
             else:                                           # żółw pozycjonowany we wskazanym segmencie (liczone od 0)
                 sec_id=sections[tidx]
             section=self.routes[agent.route][sec_id]        # przypisanie sekcji, w której się odrodzi
@@ -131,7 +131,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         sys.exit(0)
     def get_road(self,tname):
         agent = self.agents[tname]
-        print(tname,agent.color_api)
+        # print(tname,agent.color_api)
         rospy.sleep(self.WAIT_AFTER_MOVE)                       # bez tego color_api.check() nie wyrabia
         color = agent.color_api.check()                         # kolor planszy pod żółwiem
         fx = .02*(color.r-200)                                  # składowa x zalecanej prędkości <-1;1>
