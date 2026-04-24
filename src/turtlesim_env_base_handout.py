@@ -20,7 +20,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         self.GRID_RES = 5               # liczba komórek siatki
         self.CAM_RES = 200              # dł. boku siatki [px]
         self.SEC_PER_STEP = 1.0         #*okres dyskretyzacji sterowania - nie mniej niż 1 [s]
-        self.WAIT_AFTER_MOVE = .01      # oczekiwanie po setPose() i przed color_api.check() [s] (0.005 też daje radę)
+        self.WAIT_AFTER_MOVE = 0.2      # oczekiwanie po setPose() i przed color_api.check() [s] (0.005 też daje radę)
         # parametry oceny sytuacyjnej
         self.SPEED_RWRD_RATE = 0.5      #>wzmocnienie nagrody za jazdę w kierunku
         self.SPEED_RVRS_RATE = -10.0    #<wzmocnienie kary za jazdę pod prąd
@@ -91,7 +91,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
             elif sections[tidx]=='random':                  # żółw pozycjonowany w losowym segmencie jego trasy
                 # TODO STUDENCI
                 # losowanie obszaru proporcjonalnie do liczby planowanych żółwi w obszarze
-                sec_id=...
+                sec_id = np.random.randint(0, len(self.routes[agent.route]))
             else:                                           # żółw pozycjonowany we wskazanym segmencie (liczone od 0)
                 sec_id=sections[tidx]
             section=self.routes[agent.route][sec_id]        # przypisanie sekcji, w której się odrodzi
@@ -134,9 +134,9 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         print(tname,agent.color_api)
         rospy.sleep(self.WAIT_AFTER_MOVE)                       # bez tego color_api.check() nie wyrabia
         color = agent.color_api.check()                         # kolor planszy pod żółwiem
-        fx = .02*(color.r-200)                                  # składowa x zalecanej prędkości <-1;1>
-        fy = .02*(color.b-200)                                  # składowa y zalecanej prędkości <-1;1>
-        fa = color.g/255.0                                      # mnożnik kary za naruszenie ograniczeń prędkości
+        fx = .01*(color.r-100)                                  # składowa x zalecanej prędkości <-1;1>
+        fy = .01*(color.b-100)                                  # składowa y zalecanej prędkości <-1;1>
+        fa = color.g/200.0                                      # mnożnik kary za naruszenie ograniczeń prędkości
         pose = self.tapi.getPose(tname)                         # aktualna pozycja żółwia
         fd = np.sqrt((agent.goal_loc.x-pose.x)**2+(agent.goal_loc.y-pose.y)**2)     # odl. do celu
         fc = fx*np.cos(pose.theta)+fy*np.sin(pose.theta)        # rzut zalecanej prędkości na azymut

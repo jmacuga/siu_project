@@ -4,7 +4,7 @@ import rospy
 from turtlesim.msg import Pose
 from geometry_msgs.msg import Twist
 
-from turtlesim_env_base import TurtlesimEnvBase, TurtleAgent
+from turtlesim_env_base_handout import TurtlesimEnvBase, TurtleAgent
 
 class TurtlesimEnvSingle(TurtlesimEnvBase):
     def __init__(self):
@@ -19,10 +19,20 @@ class TurtlesimEnvSingle(TurtlesimEnvBase):
         # action: [prędkość,skręt]
         # TODO STUDENCI przejechać 1/2 okresu, skręcić, przejechać pozostałą 1/2
         if realtime:                                    # jazda+skręt+jazda+skręt
+            half_time = self.SEC_PER_STEP / 2.0
             twist = Twist()
-            # ...
-            self.tapi.setVel(tname,twist)
-            # ...
+    
+            # 1. Przejazd prosto przez 1/2 czasu
+            twist.linear.x = action[0]
+            twist.angular.z = 0
+            self.tapi.setVel(tname, twist)
+            rospy.sleep(half_time)
+    
+            # 2. Skręt i dokończenie przejazdu przez drugą 1/2 czasu
+            twist.linear.x = action[0]
+            twist.angular.z = action[1] / half_time # Prędkość kątowa, by wykonać żądany obrót
+            self.tapi.setVel(tname, twist)
+            rospy.sleep(half_time)
         else:                                           # skok+obrót
             # obliczenie i wykonanie przesunięcia
             vx = np.cos(pose.theta+action[1])*action[0]*self.SEC_PER_STEP
