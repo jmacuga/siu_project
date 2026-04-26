@@ -7,8 +7,10 @@ RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E
 
 RUN apt update -y && apt upgrade -y && apt install python3-pip -y
 
+# RUN apt install python3-pip -y
+
 COPY requirements.txt .
 
 RUN pip3 install -r requirements.txt
 
-# ENTRYPOINT [ "./startup.sh" ]
+# ENTRYPOINT [ "./startup.sh" ]kk
