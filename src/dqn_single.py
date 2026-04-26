@@ -109,6 +109,8 @@ class DqnSingle:
             metrics=["accuracy"],
         )
 
+        
+
     # uczenie od podstaw: generuj kroki, gromadź pomiary, ucz na próbce losowej, okresowo aktualizuj model pomocniczy
     def train_main(
         self, tname: str, save_model=True
@@ -124,6 +126,9 @@ class DqnSingle:
         step_cnt = 0
         train_cnt = 0
         for episode in range(self.EPISODES_MAX):  # ucz w epizodach treningowych
+            if (episode+1)%self.SAVE_MODEL_EVERY==0:
+                self.model.save(f"model/{self.xid()}_{episode+1}.tf")
+
             print(f"{len(self.replay_memory)} E{episode} ", end="")
             current_state = self.env.reset(tnames=[tname], sections=["random"])[
                 tname
