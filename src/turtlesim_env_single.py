@@ -1,10 +1,10 @@
 # encoding: utf8
-import numpy as np
 import rospy
 from turtlesim.msg import Pose
 from geometry_msgs.msg import Twist
 
 from turtlesim_env_base import TurtlesimEnvBase, TurtleAgent
+import numpy as np
 
 class TurtlesimEnvSingle(TurtlesimEnvBase):
     def __init__(self):
