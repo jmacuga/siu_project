@@ -17,14 +17,14 @@ class DqnSingle:
         self.id_prefix = id_prefix  #   przyrostek identyfikatora modelu
         self.DISCOUNT = 0.9  # D dyskonto dla nagrody w następnym kroku
         self.EPS_INIT = 1.0  # *  ε początkowy
-        self.EPS_DECAY = 0.99  # *E spadek ε
+        self.EPS_DECAY = 0.995  # *E spadek ε
         self.EPS_MIN = 0.05  # *e ε minimalny
         self.REPLAY_MEM_SIZE_MAX = 20_000  # M rozmiar cache decyzji
         self.REPLAY_MEM_SIZE_MIN = 4_000  # m zapełnienie warunkujące uczenie
         self.MINIBATCH_SIZE = 32  # B liczba decyzji w próbce uczącej
         self.TRAINING_BATCH_SIZE = self.MINIBATCH_SIZE // 4
         self.UPDATE_TARGET_EVERY = (
-            20  # U co ile treningów aktualizować model wolnozmienny
+            200  # U co ile treningów aktualizować model wolnozmienny
         )
         self.EPISODES_MAX = 4000  # *P liczba epizodów uczących
         self.CTL_DIM = 6  #   liczba możliwych akcji (tj. sterowań, decyzji)
@@ -99,7 +99,7 @@ class DqnSingle:
             Conv3D(filters=2 * M, kernel_size=(2, 2, 2 * M), activation="relu")
         )
         self.model.add(Flatten())
-        self.model.add(Dense(32, activation="relu"))
+        self.model.add(Dense(64, activation="relu"))
         self.model.add(
             Dense(self.CTL_DIM, activation="linear")
         )  # wyjście Q dla każdej z CTL_DIM decyzji

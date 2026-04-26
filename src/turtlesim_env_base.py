@@ -20,13 +20,13 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         self.GRID_RES = 5               # liczba komórek siatki
         self.CAM_RES = 200              # dł. boku siatki [px]
         self.SEC_PER_STEP = 1.0         #*okres dyskretyzacji sterowania - nie mniej niż 1 [s]
-        self.WAIT_AFTER_MOVE = .01      # oczekiwanie po setPose() i przed color_api.check() [s] (0.005 też daje radę)
+        self.WAIT_AFTER_MOVE = .025      # oczekiwanie po setPose() i przed color_api.check() [s] (0.005 też daje radę)
         # parametry oceny sytuacyjnej
-        self.SPEED_RWRD_RATE = 0.5      #>wzmocnienie nagrody za jazdę w kierunku
+        self.SPEED_RWRD_RATE = 1.5      #>wzmocnienie nagrody za jazdę w kierunku
         self.SPEED_RVRS_RATE = -10.0    #<wzmocnienie kary za jazdę pod prąd
         self.SPEED_FINE_RATE = -10.0    #<wzmocnienie kary za przekroczenie prędkości
         self.DIST_RWRD_RATE = 2.0       #>wzmocnienie nagrody za zbliżanie się do celu
-        self.OUT_OF_TRACK_FINE = -10    #<ryczałtowa kara za wypadnięcie z trasy
+        self.OUT_OF_TRACK_FINE = -30    #<ryczałtowa kara za wypadnięcie z trasy
         self.COLLISION_DIST = 1.5       #*odległość wykrycia kolizji [m]
         self.DETECT_COLLISION = False   # tryb wykrywania kolizji przez środowisko
         self.MAX_STEPS = 20             # maksymalna liczba kroków agentów
