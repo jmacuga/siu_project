@@ -11,7 +11,9 @@ tname=list(agents.keys())[0]                            # zapamiętanie identyfi
 dqn=DqnSingle(env, 'test')                              # utworzenie klasy uczącej (tam są metody wyliczania sterowania)
 # dqn.model=load_model('dqns-Gr5_Cr200_Sw1.5_Sv-10.0_Sf-5.0_Dr2.0_Oo-30_Cd1.5_Ms20_Pb6_D0.9_E0.995_e0.05_M20000_m4000_B32_U200_P4000_T4_1000.tf') #  Model bez zmiany parametrów
 # dqn.model=load_model('model/dqns-Gr5_Cr200_Sw1_Sv-10.0_Sf-5.0_Dr2.0_Oo-10_Cd1.5_Ms20_Pb6_D0.9_E0.99_e0.05_M20000_m4000_B32_U20_P4000_T4_4000.tf') #  Model ze zwiększoną nagrodą za jazdę zgodną z kierunkiem
-dqn.model=load_model('model/dqns-Gr5_Cr200_Sw0.5_Sv-10.0_Sf-5.0_Dr2.0_Oo-15_Cd1.5_Ms20_Pb6_D0.9_E0.99_e0.05_M20000_m4000_B32_U20_P4000_T4_4000.tf') #  Model ze zwiększoną karą za wyjezdzanie poza trasę
+# dqn.model=load_model('model/dqns-Gr5_Cr200_Sw0.5_Sv-10.0_Sf-5.0_Dr2.0_Oo-15_Cd1.5_Ms20_Pb6_D0.9_E0.99_e0.05_M20000_m4000_B32_U20_P4000_T4_4000.tf') #  Model ze zwiększoną karą za wyjezdzanie poza trasę
+dqn.model = load_model('model/dqns-Gr5_Cr200_Sw1.5_Sv-10.0_Sf-5.0_Dr2.0_Oo-30_Cd1.5_Ms20_Pb6_D0.9_E0.995_e0.05_M20000_m4000_B32_U200_P4000_T4_1000.tf') # model Ola 1k
+# dqn.model = load_model('model/dqns-Gr5_Cr200_Sw1.5_Sv-10.0_Sf-5.0_Dr2.0_Oo-30_Cd1.5_Ms20_Pb6_D0.9_E0.995_e0.05_M20000_m4000_B32_U200_P4000_T4_3000.tf') # model Ola 4k
 
 current_state=agents[tname].map
 last_state=[i.copy() for i in current_state]

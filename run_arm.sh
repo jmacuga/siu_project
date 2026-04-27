@@ -35,18 +35,22 @@ if [ -z "$ROS_SETUP" ]; then
 fi
 
 COPY_CMD=""
+COPY_CSV_CMD=""
 case $MODE in
     train)
         PY_SCRIPT="dqn_single.py"
         COPY_CMD="cp trasa_nr1.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
+        COPY_CSV_CMD="cp Scenariusz.csv src/routes.csv"
         ;;
     eval)
         PY_SCRIPT="play_single_handout.py"
         COPY_CMD="cp trasa_nr1.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
+        COPY_CSV_CMD="cp Scenariusz.csv src/routes.csv"
         ;;
     test)
         PY_SCRIPT="play_single_handout.py"
         COPY_CMD="cp trasa_nr2.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
+        COPY_CSV_CMD="cp Scenariusz2.csv src/routes.csv"
         ;;
     *)
         echo "Nieznany argument: $MODE"
@@ -75,4 +79,5 @@ cmd_py="source $(printf '%q' "$ROS_SETUP"); echo Tryb: $MODE; cd $(printf '%q' "
 
 launch_term "ROS" "$cmd_ros"
 sleep 2
+$COPY_CSV_CMD
 launch_term "Python $MODE" "$cmd_py"
