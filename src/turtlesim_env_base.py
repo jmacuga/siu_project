@@ -74,7 +74,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
                     if self.tapi.hasTurtle(tname):          # utwórz/odtwórz agenta w symulatorze
                         self.tapi.killTurtle(tname)
                     self.tapi.spawnTurtle(tname,Pose())
-                    self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=1))  # unieś rysik
+                    self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=0))  # unieś rysik
                     ta.color_api=TurtlesimSIU.ColorSensor(tname)                # przechowuj obiekt sensora koloru
     # pozycjonuje żółwie na ich trasach , zeruje licznik kroków
     def reset(self,
@@ -131,18 +131,19 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         sys.exit(0)
     def get_road(self,tname):
         agent = self.agents[tname]
-        # print(tname,agent.color_api)
-        rospy.sleep(self.WAIT_AFTER_MOVE)                       # bez tego color_api.check() nie wyrabia
-        color = agent.color_api.check()                         # kolor planszy pod żółwiem
-        fx = .02*(color.r-200)                                  # składowa x zalecanej prędkości <-1;1>
-        fy = .02*(color.b-200)                                  # składowa y zalecanej prędkości <-1;1>
-        fa = color.g/255.0                                      # mnożnik kary za naruszenie ograniczeń prędkości
-        pose = self.tapi.getPose(tname)                         # aktualna pozycja żółwia
-        fd = np.sqrt((agent.goal_loc.x-pose.x)**2+(agent.goal_loc.y-pose.y)**2)     # odl. do celu
-        fc = fx*np.cos(pose.theta)+fy*np.sin(pose.theta)        # rzut zalecanej prędkości na azymut
-        fp = fy*np.cos(pose.theta)-fx*np.sin(pose.theta)        # rzut zalecanej prędkości na _|_ azymut
+        color = agent.color_api.check()
+        while color is None:
+            rospy.sleep(0.001)  # Czekaj tylko 1ms i sprawdź ponownie
+            color = agent.color_api.check()
+
+        fx = .02*(color.r-200) 
+        fy = .02*(color.b-200) 
+        fa = color.g/255.0 
+        pose = self.tapi.getPose(tname) 
+        fd = np.sqrt((agent.goal_loc.x-pose.x)**2+(agent.goal_loc.y-pose.y)**2) 
+        fc = fx*np.cos(pose.theta)+fy*np.sin(pose.theta) 
+        fp = fy*np.cos(pose.theta)-fx*np.sin(pose.theta) 
         return fx,fy,fa,fd,fc+1,fp+1
-    # zwraca macierze opisujące sytuację w otoczeniu wskazanego agenta (tname)
     def get_map(self,tname: str):
         agent = self.agents[tname]
         pose  = self.tapi.getPose(tname)
