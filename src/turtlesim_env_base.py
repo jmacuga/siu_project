@@ -6,7 +6,6 @@ import signal
 import rospy
 import turtlesim
 import numpy as np
-from cv_bridge import CvBridge
 from turtlesim.msg import Pose
 from TurtlesimSIU import TurtlesimSIU
 
@@ -42,7 +41,6 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
               routes_fname: str,        # nazwa pliku z definicją scenariuszy
               agent_cnt=None):          # ograniczenie na liczbę tworzonych agentów (None - brak ogr., agenty wg scenariuszy)
         signal.signal(signal.SIGINT,self.signal_handler)    # zainstalowanie obsługi zdarzenia
-        bridge = CvBridge()
         rospy.init_node('siu_example',anonymous=False)
         self.tapi=TurtlesimSIU.TurtlesimSIU()               # ustanowienie komunikacji z symulatorem
         self.rate=rospy.Rate(1)

@@ -1,13 +1,14 @@
 # encoding: utf8
 import random
 import pickle
-import numpy as np
 from collections import deque
+# ROS stack before TensorFlow (cleaner native import order in mixed venv + /opt/ros setups).
+from turtlesim_env_base import TurtlesimEnvBase
+import turtlesim_env_single
+import numpy as np
 from tensorflow import keras, constant
 from keras.models import Sequential
 from keras.layers import Conv3D, Permute, Dense, Flatten
-from turtlesim_env_base import TurtlesimEnvBase
-import turtlesim_env_single
 
 
 class DqnSingle:
