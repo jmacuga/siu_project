@@ -15,12 +15,12 @@ class DqnSingle:
     def __init__(self, env: TurtlesimEnvBase, id_prefix="dqns", seed=42):
         self.env = env
         self.id_prefix = id_prefix  #   przyrostek identyfikatora modelu
-        self.DISCOUNT = 0.9  # D dyskonto dla nagrody w następnym kroku
+        self.DISCOUNT = 0.99  # D dyskonto dla nagrody w następnym kroku
         self.EPS_INIT = 1.0  # *  ε początkowy
         self.EPS_DECAY = 0.995  # *E spadek ε
         self.EPS_MIN = 0.05  # *e ε minimalny
         self.REPLAY_MEM_SIZE_MAX = 20_000  # M rozmiar cache decyzji
-        self.REPLAY_MEM_SIZE_MIN = 4_000  # m zapełnienie warunkujące uczenie
+        self.REPLAY_MEM_SIZE_MIN = 500  # m zapełnienie warunkujące uczenie
         self.MINIBATCH_SIZE = 32  # B liczba decyzji w próbce uczącej
         self.TRAINING_BATCH_SIZE = self.MINIBATCH_SIZE // 4
         self.UPDATE_TARGET_EVERY = (

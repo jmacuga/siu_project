@@ -8,10 +8,10 @@ agents=env.reset()                                      # utworzenie i umiejscow
 # agents=env.reset(None, 7)                                      # utworzenie i umiejscowienie agenta
 tname=list(agents.keys())[0]                            # zapamiętanie identyfikatora agenta
 dqn=DqnSingle(env, 'test')                              # utworzenie klasy uczącej (tam są metody wyliczania sterowania)
-dqn.model=load_model('dqns-Gr5_Cr200_Sw1.5_Sv-10.0_Sf-5.0_Dr2.0_Oo-30_Cd1.5_Ms20_Pb6_D0.9_E0.995_e0.05_M20000_m4000_B32_U200_P4000_T4_1000.tf')
+dqn.model=load_model('dqns-Gr5_Cr200_Sw1.5_Sv-10.0_Sf-5.0_Dr2.0_Oo-100_Cd1.5_Ms20_Pb6_D0.99_E0.99_e0.05_M20000_m500_B32_U200_P4000_T4_1000.tf')
 current_state=agents[tname].map
 last_state=[i.copy() for i in current_state]
-for step in range(1000):
+for step in range(7000):
     control=np.argmax(dqn.decision(dqn.model,last_state,current_state))
     last_state=current_state
     current_state,reward,done=env.step({tname:dqn.ctl2act(control)}, realtime=False)
