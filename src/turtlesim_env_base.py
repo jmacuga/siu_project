@@ -19,13 +19,13 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         self.GRID_RES = 5               # liczba komórek siatki
         self.CAM_RES = 200              # dł. boku siatki [px]
         self.SEC_PER_STEP = 1.0         #*okres dyskretyzacji sterowania - nie mniej niż 1 [s]
-        self.WAIT_AFTER_MOVE = .025      # oczekiwanie po setPose() i przed color_api.check() [s] (0.005 też daje radę)
+        self.WAIT_AFTER_MOVE = .005      # oczekiwanie po setPose() i przed color_api.check() [s] (0.005 też daje radę)
         # parametry oceny sytuacyjnej
         self.SPEED_RWRD_RATE = 1.5      #>wzmocnienie nagrody za jazdę w kierunku
         self.SPEED_RVRS_RATE = -10.0    #<wzmocnienie kary za jazdę pod prąd
         self.SPEED_FINE_RATE = -10.0    #<wzmocnienie kary za przekroczenie prędkości
         self.DIST_RWRD_RATE = 2.0       #>wzmocnienie nagrody za zbliżanie się do celu
-        self.OUT_OF_TRACK_FINE = -30    #<ryczałtowa kara za wypadnięcie z trasy
+        self.OUT_OF_TRACK_FINE = -100    #<ryczałtowa kara za wypadnięcie z trasy
         self.COLLISION_DIST = 1.5       #*odległość wykrycia kolizji [m]
         self.DETECT_COLLISION = False   # tryb wykrywania kolizji przez środowisko
         self.MAX_STEPS = 20             # maksymalna liczba kroków agentów
@@ -72,7 +72,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
                     if self.tapi.hasTurtle(tname):          # utwórz/odtwórz agenta w symulatorze
                         self.tapi.killTurtle(tname)
                     self.tapi.spawnTurtle(tname,Pose())
-                    self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=1))  # unieś rysik
+                    self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=0))  # unieś rysik
                     ta.color_api=TurtlesimSIU.ColorSensor(tname)                # przechowuj obiekt sensora koloru
     # pozycjonuje żółwie na ich trasach , zeruje licznik kroków
     def reset(self,
@@ -129,18 +129,19 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         sys.exit(0)
     def get_road(self,tname):
         agent = self.agents[tname]
-        # print(tname,agent.color_api)
-        rospy.sleep(self.WAIT_AFTER_MOVE)                       # bez tego color_api.check() nie wyrabia
-        color = agent.color_api.check()                         # kolor planszy pod żółwiem
-        fx = .02*(color.r-200)                                  # składowa x zalecanej prędkości <-1;1>
-        fy = .02*(color.b-200)                                  # składowa y zalecanej prędkości <-1;1>
-        fa = color.g/255.0                                      # mnożnik kary za naruszenie ograniczeń prędkości
-        pose = self.tapi.getPose(tname)                         # aktualna pozycja żółwia
-        fd = np.sqrt((agent.goal_loc.x-pose.x)**2+(agent.goal_loc.y-pose.y)**2)     # odl. do celu
-        fc = fx*np.cos(pose.theta)+fy*np.sin(pose.theta)        # rzut zalecanej prędkości na azymut
-        fp = fy*np.cos(pose.theta)-fx*np.sin(pose.theta)        # rzut zalecanej prędkości na _|_ azymut
+        color = agent.color_api.check()
+        while color is None:
+            rospy.sleep(0.001)  # Czekaj tylko 1ms i sprawdź ponownie
+            color = agent.color_api.check()
+
+        fx = .02*(color.r-200) 
+        fy = .02*(color.b-200) 
+        fa = color.g/255.0 
+        pose = self.tapi.getPose(tname) 
+        fd = np.sqrt((agent.goal_loc.x-pose.x)**2+(agent.goal_loc.y-pose.y)**2) 
+        fc = fx*np.cos(pose.theta)+fy*np.sin(pose.theta) 
+        fp = fy*np.cos(pose.theta)-fx*np.sin(pose.theta) 
         return fx,fy,fa,fd,fc+1,fp+1
-    # zwraca macierze opisujące sytuację w otoczeniu wskazanego agenta (tname)
     def get_map(self,tname: str):
         agent = self.agents[tname]
         pose  = self.tapi.getPose(tname)
