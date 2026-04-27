@@ -1,0 +1,16 @@
+# Native Apple Silicon / ARM64: build and run as linux/arm64 (no QEMU needed).
+# Desktop + noVNC: open http://localhost:6080 (host 6080 -> container 80 / websockify).
+services:
+  siu:
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: Dockerfile.arm
+    container_name: siu
+    ports:
+      - "6080:80"
+    shm_size: "512m"
+    volumes:
+      - .:/root/siu_project:z
+    environment:
+      - RESOLUTION=1920x720

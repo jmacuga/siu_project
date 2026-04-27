@@ -1,0 +1,109 @@
+# syntax=docker/dockerfile:1.4
+# ARM64 (Apple Silicon) SIU environment: ROS Noetic desktop + noVNC, equivalent to
+# dudekw/siu-20.04 workflow on top of tiryoh/ros-desktop-vnc (linux/arm64).
+# Base already includes ROS Noetic desktop, noVNC on container port 80 (map host 6080:80).
+
+FROM tiryoh/ros-desktop-vnc:noetic
+
+USER root
+SHELL ["/bin/bash", "-c"]
+
+# Manual steps 4–6: system + SIU ROS/Python dependencies (ROS Noetic + VNC already in base).
+# Note: ros-noetic-range-sensor-layer is omitted — not built for arm64 on packages.ros.org (Noetic).
+RUN apt-get update -q && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      bison \
+      flex \
+      git \
+      python3-catkin-pkg-modules \
+      python3-catkin-tools \
+      python3-matplotlib \
+      python3-opencv \
+      python3-pip \
+      python3-venv \
+      python3-rospkg-modules \
+      python3-rosinstall \
+      python3-scipy \
+      ros-noetic-ddynamic-reconfigure \
+      ros-noetic-force-torque-sensor-controller \
+      ros-noetic-four-wheel-steering-controller \
+      ros-noetic-gmapping \
+      ros-noetic-image-proc \
+      ros-noetic-imu-sensor-controller \
+      ros-noetic-laser-filters \
+      ros-noetic-move-base-msgs \
+      ros-noetic-moveit-planners-ompl \
+      ros-noetic-moveit-ros-planning-interface \
+      ros-noetic-moveit-simple-controller-manager \
+      ros-noetic-navigation \
+      ros-noetic-object-recognition-msgs \
+      ros-noetic-octomap-mapping \
+      ros-noetic-octomap-server \
+      ros-noetic-people-msgs \
+      ros-noetic-pointcloud-to-laserscan \
+      ros-noetic-rosbridge-server \
+      ros-noetic-rospy-message-converter \
+      ros-noetic-sound-play \
+      ros-noetic-teleop-twist-keyboard \
+      ros-noetic-teb-local-planner \
+      ros-noetic-twist-mux \
+      'ros-noetic-turtlebot3*' \
+    && rm -rf /var/lib/apt/lists/*
+
+# Manual 2–3, 7–10: workspace under /opt/siu_ws (no ubuntu user at image build time; see skel hook below).
+RUN mkdir -p /opt/siu_ws/src && \
+    git clone -b noetic-devel --depth 1 \
+      https://github.com/RCPRG-ROS-pkg/ros_tutorials \
+      /opt/siu_ws/src/ros_tutorials
+
+RUN source /opt/ros/noetic/setup.bash && \
+    cd /opt/siu_ws && \
+    catkin build
+
+COPY requirements.txt /tmp/requirements.txt
+# --system-site-packages: ROS Python deps (e.g. rospkg from apt) live outside the venv.
+RUN python3 -m venv --system-site-packages /opt/siu-ml-venv && \
+    /opt/siu-ml-venv/bin/pip install --upgrade pip setuptools wheel && \
+    /opt/siu-ml-venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt && \
+    /opt/siu-ml-venv/bin/pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python 2>/dev/null || true && \
+    rm -f /tmp/requirements.txt
+
+# New VNC/desktop users get $HOME/siu_ws -> /opt/siu_ws (manual paths, e.g. roads.png under .../turtlesim/images/).
+# TensorFlow/Keras live in /opt/siu-ml-venv so /usr/bin/pip (system) is not broken by pip-installed cryptography.
+RUN printf '\n# SIU workspace symlink (same as $HOME/siu_ws in course manual)\n\
+if [ -n "${HOME:-}" ] && [ "$(id -u)" -ne 0 ] && [ ! -e "$HOME/siu_ws" ] && [ -d /opt/siu_ws ]; then\n\
+  ln -s /opt/siu_ws "$HOME/siu_ws"\n\
+fi\n\
+if [ -f /opt/siu-ml-venv/bin/activate ]; then\n\
+  . /opt/siu-ml-venv/bin/activate\n\
+fi\n' >> /etc/skel/.bashrc
+
+# Source workspace after base image appends /opt/ros/... to ~/.bashrc (catkin overlay order).
+RUN <<'PY' python3
+from pathlib import Path
+path = Path("/entrypoint.sh")
+text = path.read_text()
+needle = (
+    'grep -F "source /opt/ros/$ROS_DISTRO/setup.bash" "$BASHRC_PATH" '
+    '|| echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> "$BASHRC_PATH"'
+)
+extra = (
+    needle
+    + "\n"
+    + 'grep -F "source /opt/siu_ws/devel/setup.bash" "$BASHRC_PATH" '
+    + '|| echo "source /opt/siu_ws/devel/setup.bash" >> "$BASHRC_PATH"'
+)
+if needle not in text:
+    raise SystemExit("entrypoint.sh: expected ROS bashrc block not found")
+path.write_text(text.replace(needle, extra, 1))
+PY
+
+# Compose often mounts the repo under /root/siu_project; tiryoh only wires ROS into the VNC user's ~/.bashrc.
+RUN printf '\n# ROS + SIU for root (non-interactive docker exec / default root shell)\n\
+source /opt/ros/noetic/setup.bash\n\
+test -f /opt/siu_ws/devel/setup.bash && source /opt/siu_ws/devel/setup.bash\n\
+test -f /opt/siu-ml-venv/bin/activate && . /opt/siu-ml-venv/bin/activate\n' >> /root/.bashrc
+
+# noVNC is served on port 80 inside the image (websockify); use -p 6080:80 on the host.
+EXPOSE 80

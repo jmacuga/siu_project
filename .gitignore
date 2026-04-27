@@ -1,2 +1,6 @@
-*.tf
-src/__pycache__
+src/model/*.tf
+**__pycache__/
+*.pyc
+.patch
+/.mypy_cache
+src/__pycache__s
