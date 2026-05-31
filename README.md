@@ -42,8 +42,8 @@ W katalogu głównym znajduje się skrypt run.sh, który obsługuje trzy tryby p
 
 ## Etap 3
 
-- [ ] przygotować nową planszę
-- [ ] przygtować nowe scenariusze
+- [x] przygotować nową planszę
+- [x] przygtować nowe scenariusze
 - [ ] uzupełnić kod
   - [ ] strategia wstawiania olwi w obszarach startowych
     - albo zawsze w swoim obszarze startowym
