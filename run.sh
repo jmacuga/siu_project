@@ -52,10 +52,12 @@ sleep 2
 # terminal 2 - Python + ewentualne kopiowanie
 lxterminal -e "bash -c '
 source /root/siu_ws/devel/setup.bash;
+source /root/.venv/bin/activate
 echo Tryb: $MODE;
 
 $COPY_CSV_CMD
 cd src
 echo Uruchamiam $PY_SCRIPT;
-python3 $PY_SCRIPT
+python3 $PY_SCRIPT;
+exec bash
 '" &
