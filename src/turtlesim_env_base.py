@@ -72,7 +72,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
                     if self.tapi.hasTurtle(tname):          # utwórz/odtwórz agenta w symulatorze
                         self.tapi.killTurtle(tname)
                     self.tapi.spawnTurtle(tname,Pose())
-                    self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=0))  # unieś rysik
+                    self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=1))  # unieś rysik
                     ta.color_api=TurtlesimSIU.ColorSensor(tname)                # przechowuj obiekt sensora koloru
     # pozycjonuje żółwie na ich trasach , zeruje licznik kroków
     def reset(self,
