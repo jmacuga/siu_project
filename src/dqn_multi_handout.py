@@ -128,7 +128,7 @@ if __name__ == "__main__":
     prefix='X6-c20c20c20d64-M-lr001'                        # bazowy z kolizjami
     env.DETECT_COLLISION=True
     env.setup('routes.csv')                                 # połączenie z symulatorem
-    agents=env.reset()                                      # ustawienie agenta
+    agents=env.reset(sections='random')                                      # ustawienie agenta
     dqnm=DqnMulti(env,id_prefix=prefix)                     # utworzenie klasy uczącej
     dqnm.make_model()                                       # skonstruowanie sieci neuronowej
     dqnm.train_main(save_model=True,save_state=True)        # wywołanie uczenia (wyniki zapisywane okresowo)
