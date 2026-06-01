@@ -26,6 +26,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         self.SPEED_FINE_RATE = -10.0    #<wzmocnienie kary za przekroczenie prędkości
         self.DIST_RWRD_RATE = 2.0       #>wzmocnienie nagrody za zbliżanie się do celu
         self.OUT_OF_TRACK_FINE = -100    #<ryczałtowa kara za wypadnięcie z trasy
+        self.COLLISION_FINE = -100      #<ryczałtowa kara za kolizję (agent-sprawca)
         self.COLLISION_DIST = 1.5       #*odległość wykrycia kolizji [m]
         self.DETECT_COLLISION = False   # tryb wykrywania kolizji przez środowisko
         self.MAX_STEPS = 20             # maksymalna liczba kroków agentów
@@ -105,8 +106,10 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
                 rospy.sleep(self.WAIT_AFTER_MOVE)               # odczekać UWAGA inaczej symulator nie zdąży przestawić żółwia
                 fx,fy,_,_,_,_ = self.get_road(tname)            # fx, fy \in <-1,1>
                 fo = self.get_map(tname)[6]
+
                 if self.DETECT_COLLISION and fo[self.GRID_RES//2,self.GRID_RES-1] == 0:
                     continue             # wykrywanie kolizji na początku (GRID_RES-1) środkowego wiersza (GRID_RES//2) rastra
+                
                 if abs(fx)+abs(fy)>.01:                         # w obrębie drogi
                     theta+=np.random.uniform(-np.pi/self.PI_BY,np.pi/self.PI_BY)    # kierunek ruchu zaburzony +- pi/PI_BY rad.
                     p = Pose(x=x,y=y,theta=theta)               # obrót żółwia
