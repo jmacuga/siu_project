@@ -9,6 +9,55 @@ from turtlesim_env_base import TurtlesimEnvBase
 class TurtlesimEnvMulti(TurtlesimEnvBase):
     def __init__(self):
         super().__init__()
+
+    def _front_occupied(self, tname: str) -> bool:
+        """True, gdy w polu widzenia z przodu (raster fo) wykryto innego agenta."""
+        fo = self.get_map(tname)[6]
+        return fo[self.GRID_RES // 2, self.GRID_RES - 1] == 0
+
+    def _collision_culprits(self, actions: dict) -> set:
+        """
+        Wyznacza agentów-sprawców kolizji w bieżącym kroku symulacji.
+        Para z getColisions(); sprawca: wyższa prędkość w kroku, przy remisie — wykrycie z przodu (fo).
+        """
+        culprits: set[str] = set()
+        if not self.DETECT_COLLISION:
+            return culprits
+        collisions = self.tapi.getColisions(self.agents.keys(), self.COLLISION_DIST)
+        if not collisions:
+            return culprits
+
+        step_speed = {}
+        front_blocked = {}
+        for tname in actions:
+            pose = self.agents[tname].pose
+            pose1 = self.tapi.getPose(tname)
+            dx = pose1.x - pose.x
+            dy = pose1.y - pose.y
+            step_speed[tname] = np.sqrt(dx * dx + dy * dy) / self.SEC_PER_STEP
+            front_blocked[tname] = self._front_occupied(tname)
+
+        eps = 1e-6     #epsilon, to treat small differences as a tie
+        for collision in collisions:
+            n1 = collision.get('name1')
+            n2 = collision.get('name2')
+            if n1 not in actions or n2 not in actions:
+                continue
+            a, b = n1, n2
+            va, vb = step_speed[a], step_speed[b]
+            if va > vb + eps:
+                culprits.add(a)
+            elif vb > va + eps:
+                culprits.add(b)
+            else:
+                if front_blocked[a]:
+                    culprits.add(a)
+                if front_blocked[b]:
+                    culprits.add(b)
+                if a not in culprits and b not in culprits:
+                    culprits.add(a)
+        return culprits
+
     def setup(self,routes_fname:str,agent_cnt=None):
         super().setup(routes_fname,agent_cnt)
         for agent in self.agents.values():              # liczba kroków - indywidualnie dla każdego agenta
@@ -44,15 +93,12 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
             rospy.sleep(self.WAIT_AFTER_MOVE)
         # pozycje i sytuacje PO kroku sterowania
         ret={}                                              # {tname:(get_map(),reward,done)}
-        collisions=self.tapi.getColisions(self.agents.keys(),self.COLLISION_DIST)
-        colliding=set()                                     # nazwy kolidujących agentów
-        for collision in collisions:
-            colliding.add(collision['name1'])
-            colliding.add(collision['name2'])
+        collision_culprits = self._collision_culprits(actions) # DONE STUDENCI wykrywanie kolizji + kara
         for tname in actions:
             pose=self.agents[tname].pose                    # położenie przed ruchem
             pose1=self.tapi.getPose(tname)                  # położenie po ruchu
-            self.agents[tname].pose=pose1                   # TODO nowa linia -> studenci
+            self.agents[tname].pose=pose1                  
+            
             fx1,fy1,fa1,fd1,_,_ = self.get_road(tname)      # warunki drogowe po przemieszczeniu
             vx1 = (pose1.x-pose.x)/self.SEC_PER_STEP        # aktualna prędkość - składowa x
             vy1 = (pose1.y-pose.y)/self.SEC_PER_STEP        #        -"-                   y
@@ -74,11 +120,10 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
                 r4 = self.OUT_OF_TRACK_FINE
                 done=True
             map=self.get_map(tname)
-            fo=map[6]
-            # wykrywanie kolizji
-            r5=0
-            if self.DETECT_COLLISION and fo[self.GRID_RES//2,self.GRID_RES-1]==0 and tname in colliding:
-                r5=self.OUT_OF_TRACK_FINE
+            # kolizja: kara i koniec epizodu tylko u agenta-sprawcy
+            r5 = 0
+            if tname in collision_culprits:
+                r5 = self.COLLISION_FINE
                 done = True
             reward=fa1*(r1+r2)+r3+r4+r5
             # sp=speed, fl=flow, cl=closing, tr=track, xx=collision

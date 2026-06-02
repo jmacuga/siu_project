@@ -1,0 +1,78 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+    echo "Użycie: $0 {train|eval}"
+    exit 1
+fi
+
+MODE=$1
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# VNC / MATE desktop in tiryoh/ros-desktop-vnc uses :1 as ubuntu; GUI terminals need a valid cookie.
+if [ -z "${DISPLAY:-}" ]; then
+    export DISPLAY=:1
+fi
+if [ -z "${XAUTHORITY:-}" ]; then
+    if [ -f "${HOME}/.Xauthority" ]; then
+        export XAUTHORITY="${HOME}/.Xauthority"
+    elif [ "$(id -u)" -eq 0 ] && [ -f /home/ubuntu/.Xauthority ]; then
+        # np. sudo ./run.sh — sesja VNC jest użytkownika ubuntu
+        export XAUTHORITY=/home/ubuntu/.Xauthority
+    fi
+fi
+
+# ROS workspace (ARM Docker: ~/siu_ws lub /opt/siu_ws; stary layout: /root/siu_ws)
+ROS_SETUP=""
+for candidate in "${HOME}/siu_ws/devel/setup.bash" /opt/siu_ws/devel/setup.bash /root/siu_ws/devel/setup.bash; do
+    if [ -f "$candidate" ]; then
+        ROS_SETUP="$candidate"
+        break
+    fi
+done
+if [ -z "$ROS_SETUP" ]; then
+    echo "Nie znaleziono devel/setup.bash (szukano: \"\$HOME/siu_ws\", /opt/siu_ws, /root/siu_ws)." >&2
+    exit 1
+fi
+
+COPY_CMD=""
+COPY_CSV_CMD=""
+case $MODE in
+    train)
+        PY_SCRIPT="dqn_multi_handout.py"
+        COPY_CMD="cp trasa_nr3.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
+        COPY_CSV_CMD="cp scenariusz_wieloagentowy.csv src/routes.csv"
+        ;;
+    eval)
+        PY_SCRIPT="play_multi_handout.py"
+        COPY_CMD="cp trasa_nr3.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
+        COPY_CSV_CMD="cp scenariusz_wieloagentowy.csv src/routes.csv"
+        ;;
+    *)
+        echo "Nieznany argument: $MODE"
+        exit 1
+        ;;
+esac
+
+# Obraz tiryoh ma terminator; lxterminal bywa niezainstalowany lub bez dostępu do wyświetlacza.
+launch_term() {
+    local title="$1"
+    local cmd="$2"
+    if command -v terminator >/dev/null 2>&1; then
+        terminator -T "$title" -e "bash -lc $(printf '%q' "$cmd")" &
+    elif command -v mate-terminal >/dev/null 2>&1; then
+        mate-terminal --title="$title" -e "bash -lc $(printf '%q' "$cmd")" &
+    elif command -v lxterminal >/dev/null 2>&1; then
+        lxterminal -t "$title" -e "bash -lc $(printf '%q' "$cmd")" &
+    else
+        echo "Brak terminator/mate-terminal/lxterminal — uruchom skrypt z terminala na pulpicie VNC (MATE)." >&2
+        bash -lc "$cmd" &
+    fi
+}
+
+cmd_ros="source $(printf '%q' "$ROS_SETUP"); $COPY_CMD; echo Start Roslyn; roslaunch turtlesim siu.launch; exec bash"
+cmd_py="source $(printf '%q' "$ROS_SETUP"); echo Tryb: $MODE; cd $(printf '%q' "$SCRIPT_DIR")/src && echo Uruchamiam $PY_SCRIPT && python3 $PY_SCRIPT; exec bash"
+
+launch_term "ROS" "$cmd_ros"
+sleep 2
+$COPY_CSV_CMD
+launch_term "Python $MODE" "$cmd_py"
