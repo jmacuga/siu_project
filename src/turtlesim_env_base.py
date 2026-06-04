@@ -29,7 +29,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         self.COLLISION_FINE = -100      #<ryczałtowa kara za kolizję (agent-sprawca)
         self.COLLISION_DIST = 1.5       #*odległość wykrycia kolizji [m]
         self.DETECT_COLLISION = False   # tryb wykrywania kolizji przez środowisko
-        self.MAX_STEPS = 100             # maksymalna liczba kroków agentów
+        self.MAX_STEPS = 20             # maksymalna liczba kroków agentów
         self.PI_BY = 6                  #*dzielnik zakresu pocz. odchylenia od azymutu żółwia na cel
         # aktualny stan środowiska symulacyjnego
         self.tapi=None                  # obiekt reprezentujący API symulatora
