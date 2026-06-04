@@ -29,7 +29,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
         self.COLLISION_FINE = -100      #<ryczałtowa kara za kolizję (agent-sprawca)
         self.COLLISION_DIST = 1.5       #*odległość wykrycia kolizji [m]
         self.DETECT_COLLISION = False   # tryb wykrywania kolizji przez środowisko
-        self.MAX_STEPS = 20             # maksymalna liczba kroków agentów
+        self.MAX_STEPS = 100             # maksymalna liczba kroków agentów
         self.PI_BY = 6                  #*dzielnik zakresu pocz. odchylenia od azymutu żółwia na cel
         # aktualny stan środowiska symulacyjnego
         self.tapi=None                  # obiekt reprezentujący API symulatora
@@ -75,6 +75,16 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
                     self.tapi.spawnTurtle(tname,Pose())
                     self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=1))  # unieś rysik
                     ta.color_api=TurtlesimSIU.ColorSensor(tname)                # przechowuj obiekt sensora koloru
+
+    def _weighted_section_id(self, route) -> int:
+        """Losuje indeks segmentu trasy z wagą = planowana liczba żółwi w obszarze (CSV, kolumna 2)."""
+        sections = self.routes[route]
+        weights = np.array([sec[0] for sec in sections], dtype=float)
+        if (weights > 0).any():
+            weights = np.where(weights > 0, weights, 0.0)
+            return int(np.random.choice(len(sections), p=weights / weights.sum()))
+        return int(np.random.randint(0, len(sections)))
+
     # pozycjonuje żółwie na ich trasach , zeruje licznik kroków
     def reset(self,
               tnames=None,                                  # lista nazw zółwi do resetu (None=wszystkie)
@@ -88,9 +98,7 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
             if sections[tidx]=='default':                   # żółw pozycjonowany wg csv
                 sec_id=agent.sec_id
             elif sections[tidx]=='random':                  # żółw pozycjonowany w losowym segmencie jego trasy
-                # TODO STUDENCI
-                # losowanie obszaru proporcjonalnie do liczby planowanych żółwi w obszarze
-                sec_id=np.random.randint(0, len(self.routes[agent.route]))
+                sec_id = self._weighted_section_id(agent.route) #DONE STUDENCI random mode
             else:                                           # żółw pozycjonowany we wskazanym segmencie (liczone od 0)
                 sec_id=sections[tidx]
             section=self.routes[agent.route][sec_id]        # przypisanie sekcji, w której się odrodzi
