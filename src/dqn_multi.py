@@ -7,7 +7,7 @@ from tensorflow import keras, constant
 from keras.models import Sequential, Model
 from keras.layers import *
 from turtlesim_env_base import TurtlesimEnvBase
-from turtlesim_env_multi import provide_env
+from turtlesim_env_multi import TurtlesimEnvMulti
 from dqn_single import DqnSingle
 
 class DqnMulti(DqnSingle):
@@ -111,8 +111,9 @@ class DqnMulti(DqnSingle):
                         print('t',end='')
                 if done:
                     to_restart.add(tname)
-                    print(f'\n {len(self.replay_memory)} {tname} E{episode} ',end='')
-                    print(f'{np.nanmean(episode_rewards.take(range(episode-self.env.MAX_STEPS-1,episode+1),mode="wrap"))/self.env.MAX_STEPS:.2f} ',end='')  # śr. nagroda za krok
+                    print(f'\nEpizod nr {episode}')
+                    print(f'{len(self.replay_memory)} {tname} E{episode} ',end='')
+                    print(f'{np.nanmean(episode_rewards.take(range(episode-self.env.MAX_STEPS-1,episode+1),mode="wrap"))/self.env.MAX_STEPS:.2f} \n',end='')  # śr. nagroda za krok
                 last_states[tname] = current_states[tname]                              # przejście do nowego stanu
                 current_states[tname] = new_state                                       # z zapamiętaniem poprzedniego
                 if epsilon > self.EPS_MIN:                                              # rosnące p-stwo uczenia na podst. historii
@@ -123,12 +124,39 @@ class DqnMulti(DqnSingle):
 # przykładowe wywołanie uczenia
 from tensorflow.keras.models import load_model
 if __name__ == "__main__":
-    env=provide_env()                   # utworzenie środowiska
-    # env.PI_BY=3                                             # zmiana wybranych parametrów środowiska
-    prefix='X6-c20c20c20d64-M-lr001'                        # bazowy z kolizjami
-    env.DETECT_COLLISION=True
-    env.setup('routes.csv')                                 # połączenie z symulatorem
-    agents=env.reset(sections='random')                                      # ustawienie agenta
-    dqnm=DqnMulti(env,id_prefix=prefix)                     # utworzenie klasy uczącej
-    dqnm.make_model()                                       # skonstruowanie sieci neuronowej
-    dqnm.train_main(save_model=True,save_state=True)        # wywołanie uczenia (wyniki zapisywane okresowo)
+    env = TurtlesimEnvMulti()
+    env.GRID_RES = 5                
+    env.SPEED_RWRD_RATE = 1.5       
+    env.SPEED_RVRS_RATE = -20.0     
+    env.SPEED_FINE_RATE = -5.0      
+    env.DIST_RWRD_RATE = 2.0        
+    env.OUT_OF_TRACK_FINE = -100.0  
+    env.COLLISION_FINE = -100.0 
+    env.COLLISION_DIST = 1.5        
+    env.MAX_STEPS = 150             
+    env.PI_BY = 6                   
+    
+    env.DETECT_COLLISION = True     
+    
+    prefix = 'trening_wieloagentowy_v6' 
+    env.setup('scenariusz_wieloagentowy_v3.csv', agent_cnt=8)   
+    agents = env.reset(sections='random')
+    
+    dqnm = DqnMulti(env, id_prefix=prefix)
+    
+    dqnm.DISCOUNT = 0.99            
+    dqnm.EPSILON = 1.0              
+    dqnm.EPS_DECAY = 0.995         
+    dqnm.EPS_MIN = 0.10             
+    dqnm.REPLAY_MEM_SIZE_MAX = 20000
+    dqnm.REPLAY_MEM_SIZE_MIN = 500  
+    dqnm.BATCH_SIZE = 32            
+    dqnm.UPDATE_TARGET_EVERY = 200  
+    dqnm.EPISODES_MAX = 4000        
+    dqnm.TRAIN_EVERY = 4  
+    dqnm.SAVE_MODEL_EVERY = 250          
+
+    dqnm.make_model()             
+    
+    print("Rozpoczecie treningu wieloagentowego")
+    dqnm.train_main(save_model=True, save_state=True)

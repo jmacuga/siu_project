@@ -10,12 +10,12 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
     def __init__(self):
         super().__init__()
 
-    def _front_occupied(self, tname: str) -> bool:
+    def _front_occupied(self, tname: str, current_map) -> bool:
         """True, gdy w polu widzenia z przodu (raster fo) wykryto innego agenta."""
-        fo = self.get_map(tname)[6]
+        fo = current_map[6]
         return fo[self.GRID_RES // 2, self.GRID_RES - 1] == 0
 
-    def _collision_culprits(self, actions: dict) -> set:
+    def _collision_culprits(self, actions: dict, collisions: list, step_maps: dict) -> set:
         """
         Wyznacza agentów-sprawców kolizji w bieżącym kroku symulacji.
         Para z getColisions(); sprawca: wyższa prędkość w kroku, przy remisie — wykrycie z przodu (fo).
@@ -23,7 +23,6 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
         culprits: set[str] = set()
         if not self.DETECT_COLLISION:
             return culprits
-        collisions = self.tapi.getColisions(self.agents.keys(), self.COLLISION_DIST)
         if not collisions:
             return culprits
 
@@ -35,7 +34,7 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
             dx = pose1.x - pose.x
             dy = pose1.y - pose.y
             step_speed[tname] = np.sqrt(dx * dx + dy * dy) / self.SEC_PER_STEP
-            front_blocked[tname] = self._front_occupied(tname)
+            front_blocked[tname] = self._front_occupied(tname, step_maps[tname])
 
         eps = 1e-6     #epsilon, to treat small differences as a tie
         for collision in collisions:
@@ -62,6 +61,7 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
         super().setup(routes_fname,agent_cnt)
         for agent in self.agents.values():              # liczba kroków - indywidualnie dla każdego agenta
             agent.step_sum=0
+
     def reset(self,tnames=None,sections='default'):
         ret=super().reset(tnames,sections)
         if tnames is None:
@@ -69,6 +69,7 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
         for tname in tnames:
             self.agents[tname].step_sum=0               # liczba kroków zerowana wybiórczo
         return ret
+
     def step(self,actions,realtime=False):              # {id_żółwia:(prędkość,skręt)}
         # pozycja PRZED krokiem sterowania
         for tname,action in actions.items():
@@ -77,12 +78,14 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
             agent.pose=self.tapi.getPose(tname)         # zapamiętanie położenia przed wykonaniem ruchu
             _,_,_,agent.fd,_,_ = self.get_road(tname)   # odl. do celu (na wypadek, gdyby uległa zmianie)
             # action: [prędkość,skręt]
-            # TODO STUDENCI przejechać 1/2 okresu, skręcić, przejechać pozostałą 1/2
-            if realtime:  # jazda+skręt+jazda
+            # TODO - DONE STUDENCI przejechać 1/2 okresu, skręcić, przejechać pozostałą 1/2
+            if realtime:  
                 twist = Twist()
-                ...
+                twist.linear.x = action[0] 
+                twist.angular.z = action[1] / self.SEC_PER_STEP 
                 self.tapi.setVel(tname, twist)
-                ...
+                rospy.sleep(self.SEC_PER_STEP) 
+                self.tapi.setVel(tname, Twist())
             else:  # skok+obrót
                 pose = self.agents[tname].pose
                 # obliczenie i wykonanie przesunięcia
@@ -91,9 +94,13 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
                 p = Pose(x=pose.x + vx, y=pose.y + vy, theta=pose.theta + action[1])
                 self.tapi.setPose(tname, p, mode='absolute')
             rospy.sleep(self.WAIT_AFTER_MOVE)
+
         # pozycje i sytuacje PO kroku sterowania
         ret={}                                              # {tname:(get_map(),reward,done)}
-        collision_culprits = self._collision_culprits(actions) # DONE STUDENCI wykrywanie kolizji + kara
+        collisions = self.tapi.getColisions(self.agents.keys(), self.COLLISION_DIST)
+        step_maps = {tname: self.get_map(tname) for tname in actions}
+        collision_culprits = self._collision_culprits(actions, collisions, step_maps) # DONE STUDENCI wykrywanie kolizji + kara
+
         for tname in actions:
             pose=self.agents[tname].pose                    # położenie przed ruchem
             pose1=self.tapi.getPose(tname)                  # położenie po ruchu
@@ -124,10 +131,11 @@ class TurtlesimEnvMulti(TurtlesimEnvBase):
             r5 = 0
             if tname in collision_culprits:
                 r5 = self.COLLISION_FINE
-                done = True
+                done = True       
+
             reward=fa1*(r1+r2)+r3+r4+r5
             # sp=speed, fl=flow, cl=closing, tr=track, xx=collision
-            # print(f'RWD: {reward:.2f} = {fa1:.2f}*(sp{r1:.2f} fl{r2:.2f}) cl{r3:.2f} tr{r4:.2f} xx{r5:.2f}')
+            print(f'RWD: {reward:.2f} = {fa1:.2f}*(sp{r1:.2f} fl{r2:.2f}) cl{r3:.2f} tr{r4:.2f} xx{r5:.2f}')
             if self.agents[tname].step_sum>self.MAX_STEPS:
                 done=True
             ret[tname]=(map,reward,done)
