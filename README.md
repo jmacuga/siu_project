@@ -48,6 +48,8 @@ W katalogu głównym znajduje się skrypt run.sh, który obsługuje trzy tryby p
   - [ ] strategia wstawiania olwi w obszarach startowych
     - albo zawsze w swoim obszarze startowym
     - albo w innym obszarze startowym
+ - [ ] 'random' tryb wyboru sekcji
+ - [ ] metoda uczenia z douczamien wykrywania kolizji
 - [ ] wytrenować sposób 1 - z wykrywaniem kolizji
 - [ ] wytrenować sposób 2 - z douczaniem
 - [ ] opracowac metodę ilościowej oceny modelu
