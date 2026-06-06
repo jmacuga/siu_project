@@ -98,13 +98,21 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
             if sections[tidx]=='default':                   # żółw pozycjonowany wg csv
                 sec_id=agent.sec_id
             elif sections[tidx]=='random':                  # żółw pozycjonowany w losowym segmencie jego trasy
-                sec_id = self._weighted_section_id(agent.route) #DONE STUDENCI random mode
+                trasa_agenta = self.routes[agent.route]
+                wagi = np.array([sekcja[0] for sekcja in trasa_agenta], dtype=float)
+                prawdopodobienstwa = wagi / wagi.sum()
+                sec_id = np.random.choice(len(trasa_agenta), p=prawdopodobienstwa)
             else:                                           # żółw pozycjonowany we wskazanym segmencie (liczone od 0)
                 sec_id=sections[tidx]
             section=self.routes[agent.route][sec_id]        # przypisanie sekcji, w której się odrodzi
             agent.goal_loc=Pose(x=section[5],y=section[6])  # pierwszy cel
             # próba ulokowania agenta we wskazanym obszarze i jednocześnie na drodze (niezerowy wektor zalecanej prędkości)
+            max_prob = 10 
+            aktualna_proba = 0
             while True:
+                aktualna_proba += 1
+                if aktualna_proba > max_prob:
+                    break
                 x = np.random.uniform(section[1],section[2])
                 y = np.random.uniform(section[3],section[4])
                 # azymut początkowy dokładnie w kierunku celu
