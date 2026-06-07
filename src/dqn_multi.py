@@ -12,12 +12,79 @@ from dqn_single import DqnSingle
 
 class DqnMulti(DqnSingle):
     def __init__(self,env:TurtlesimEnvBase,id_prefix='dqnm',seed=42):
+        self.BRANCHED_MODEL = env.BRANCHED_MODEL
         super().__init__(env,id_prefix,seed)
     # złożenie dwóch rastrów sytuacji aktualnej i poprzedniej w tensor 5x5x10 wejścia do sieci
     def inp_stack(_,last,cur):
         # fa,fd,fc+1,fp+1 ORAZ fo doklejone na końcu
         inp = np.stack([cur[2],cur[3],cur[4],cur[5],last[2],last[3],last[4],last[5],cur[6],last[6]], axis=-1)
         return inp
+    
+    def split_input_if_needed(self, inp):
+            if self.BRANCHED_MODEL:
+                inp_route = inp[:, :, :, :8]
+                inp_collision = inp[:, :, :, 8:]
+                return [inp_route, inp_collision]
+            else:
+                return inp
+        
+    # predykcja nagród łącznych (Q) za sterowania na podst. bieżącej i ostatniej sytuacji
+    def decision(self, the_model, last, cur):
+        inp = np.expand_dims(self.inp_stack(last, cur), axis=-1)
+        inp = np.expand_dims(inp, axis=0)
+        # return the_model.predict(inp,verbose=0).flatten() # wektor przewidywanych nagród dla sterowań -> UBYTEK PAMIĘCI w dockerze
+        return (
+            the_model(self.split_input_if_needed(inp)).numpy().flatten()
+        )  # wektor przewidywanych nagród dla sterowań
+    
+    # przygotowuje próbkę uczącą i wywołuje douczanie modelu
+    def do_train(self, episode=None):
+        minibatch = random.sample(
+            self.replay_memory, self.MINIBATCH_SIZE
+        )  # losowy podzbiór kroków z historii
+        Q0 = np.zeros(
+            ((self.MINIBATCH_SIZE, self.CTL_DIM))
+        )  # nagrody krok n wg modelu bieżącego
+        Q1target = Q0.copy()  # nagrody krok n+1 wg modelu pomocniczego
+        for idx, (last_state, current_state, _, _, new_state, _) in enumerate(
+            minibatch
+        ):
+            Q0[idx] = self.decision(
+                self.model, last_state, current_state
+            )  # krok n / model bieżący
+            Q1target[idx] = self.decision(
+                self.target_model, current_state, new_state
+            )  # krok n+1 / model główny
+        X = []  # sytuacje treningowe
+        y = []  # decyzje treningowe
+        for idx, (
+            last_state,
+            current_state,
+            control,
+            reward,
+            new_state,
+            done,
+        ) in enumerate(minibatch):
+            if done:
+                new_q = reward  # nie ma już stanu następnego, ucz się otrzymywać faktyczną nagrodę
+            else:
+                # nagroda uwzględnia nagrodę za kolejny etap sterowania
+                new_q = reward + self.DISCOUNT * np.max(Q1target[idx])
+            q0 = Q0[idx].copy()
+            q0[control] = (
+                new_q  # pożądane wyjście wg informacji po kroku (reszta - oszacowanie)
+            )
+            inp = self.inp_stack(last_state, current_state)  # na wejściu - stan
+            X.append(np.expand_dims(inp, axis=-1))
+            y.append(q0)
+        # douczanie modelu (w niektórych implementacjach wywoływana bezpośrednio propagacja wsteczna gradientu)
+        # zapamiętanie wag tylko 1. warstwy splotowej
+        X = np.stack(X)
+        y = np.stack(y)
+        self.model.fit(
+            self.split_input_if_needed(X), y, batch_size=self.TRAINING_BATCH_SIZE, verbose=0, shuffle=False
+        )
+
     # predykcja nagród łącznych (Q) za sterowania na podst. bieżącej i ostatniej sytuacji
     # wytworzenie modelu - sieci neuronowej
     def make_model(self):
@@ -34,6 +101,7 @@ class DqnMulti(DqnSingle):
         self.model.add(Dense(self.CTL_DIM,activation="linear"))                     # wyjście Q dla każdej z CTL_DIM decyzji
         self.model.compile(loss='mse',optimizer=keras.optimizers.Adam(learning_rate=0.001),metrics=["accuracy"])
     def make_branched_model(self):
+        print("Branched model")
         N = self.env.GRID_RES  # rozdzielczość rastra
         # gałąź analizy trasy
         M=8
@@ -119,6 +187,7 @@ class DqnMulti(DqnSingle):
                 if epsilon > self.EPS_MIN:                                              # rosnące p-stwo uczenia na podst. historii
                     epsilon*=self.EPS_DECAY
                     epsilon=max(self.EPS_MIN,epsilon)                                   # ogranicz malenie eps
+        
 
 
 # przykładowe wywołanie uczenia
@@ -134,12 +203,12 @@ if __name__ == "__main__":
     env.COLLISION_FINE = -100.0 
     env.COLLISION_DIST = 1.5        
     env.MAX_STEPS = 150             
-    env.PI_BY = 6                   
+    env.PI_BY = 6
+    env.BRANCHED_MODEL = True
+    env.DETECT_COLLISION = True                  
     
-    env.DETECT_COLLISION = True     
-    
-    prefix = 'trening_wieloagentowy_v6' 
-    env.setup('scenariusz_wieloagentowy_v3.csv', agent_cnt=8)   
+    prefix = 'trening_wieloagentowy_z_galeziami_kolizji' 
+    env.setup('scenariusz_wieloagentowy_v4.csv', agent_cnt=8)   
     agents = env.reset(sections='random')
     
     dqnm = DqnMulti(env, id_prefix=prefix)
@@ -156,7 +225,10 @@ if __name__ == "__main__":
     dqnm.TRAIN_EVERY = 4  
     dqnm.SAVE_MODEL_EVERY = 250          
 
-    dqnm.make_model()             
+    if env.BRANCHED_MODEL:
+        dqnm.make_branched_model()
+    else:
+        dqnm.make_model()            
     
     print("Rozpoczecie treningu wieloagentowego")
     dqnm.train_main(save_model=True, save_state=True)

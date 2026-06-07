@@ -8,6 +8,7 @@ from turtlesim_env_base import TurtlesimEnvBase
 
 class TurtlesimEnvMulti(TurtlesimEnvBase):
     def __init__(self):
+        self.BRANCHED_MODEL = False
         super().__init__()
 
     def _front_occupied(self, tname: str, current_map) -> bool:
