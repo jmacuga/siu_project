@@ -76,15 +76,6 @@ class TurtlesimEnvBase(metaclass=abc.ABCMeta):
                     self.tapi.setPen(tname,turtlesim.srv.SetPenRequest(off=1))  # unieś rysik
                     ta.color_api=TurtlesimSIU.ColorSensor(tname)                # przechowuj obiekt sensora koloru
 
-    def _weighted_section_id(self, route) -> int:
-        """Losuje indeks segmentu trasy z wagą = planowana liczba żółwi w obszarze (CSV, kolumna 2)."""
-        sections = self.routes[route]
-        weights = np.array([sec[0] for sec in sections], dtype=float)
-        if (weights > 0).any():
-            weights = np.where(weights > 0, weights, 0.0)
-            return int(np.random.choice(len(sections), p=weights / weights.sum()))
-        return int(np.random.randint(0, len(sections)))
-
     # pozycjonuje żółwie na ich trasach , zeruje licznik kroków
     def reset(self,
               tnames=None,                                  # lista nazw zółwi do resetu (None=wszystkie)
