@@ -44,7 +44,7 @@ class DqnSingle:
         s,
     ) -> str:  # 2 litery - parametr środowiska, 1 litera - parametr klasy uczącej
         return (
-            f"{s.id_prefix}-Gr{s.env.GRID_RES}_Cr{s.env.CAM_RES}_Sw{s.env.SPEED_RWRD_RATE}"
+            f"multiagent-branched-model-1-{s.id_prefix}-Gr{s.env.GRID_RES}_Cr{s.env.CAM_RES}_Sw{s.env.SPEED_RWRD_RATE}"
             f"_Sv{s.env.SPEED_RVRS_RATE}_Sf{s.env.SPEED_FINE_RATE}_Dr{s.env.DIST_RWRD_RATE}"
             f"_Oo{s.env.OUT_OF_TRACK_FINE}_Cd{s.env.COLLISION_DIST}_Ms{s.env.MAX_STEPS}"
             f"_Pb{s.env.PI_BY}_D{s.DISCOUNT}_E{s.EPS_DECAY}_e{s.EPS_MIN}_M{s.REPLAY_MEM_SIZE_MAX}"
@@ -75,7 +75,7 @@ class DqnSingle:
         inp = np.expand_dims(inp, axis=0)
         # return the_model.predict(inp,verbose=0).flatten() # wektor przewidywanych nagród dla sterowań -> UBYTEK PAMIĘCI w dockerze
         return (
-            the_model(inp).numpy().flatten()
+            the_model(self.split_input_if_needed(inp)).numpy().flatten()
         )  # wektor przewidywanych nagród dla sterowań
 
     # wytworzenie modelu - sieci neuronowej
@@ -228,8 +228,11 @@ class DqnSingle:
         X = np.stack(X)
         y = np.stack(y)
         self.model.fit(
-            X, y, batch_size=self.TRAINING_BATCH_SIZE, verbose=0, shuffle=False
+            self.split_input_if_needed(X), y, batch_size=self.TRAINING_BATCH_SIZE, verbose=0, shuffle=False
         )
+    
+    def split_input_if_needed(self, inp):
+        return inp
 
 
 # przykładowe wywołanie uczenia
