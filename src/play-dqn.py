@@ -50,7 +50,7 @@ if args.cam_res is not None:
 
 env.DETECT_COLLISION=args.detect_collision
 dqn=Dqn(env,'test')                                     # utworzenie klasy uczącej (tam są metody wyliczania sterowania)
-dqn.branched=args.branched
+dqn.BRANCHED_MODEL=args.branched
 
 # if True:
 for s in args.model_names:                              # ocena dla każdego modelu - argumentu wywołania
