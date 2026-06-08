@@ -1,2 +1,7 @@
 collisions, succeeded_targets, ride, lap ,lap/ride, model_name
 60 619 68 619.0 9.10 trening_wieloagentowy_v7-Gr5_Cr200_Sw5.0_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms100_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P4000_T4-2000
+106 34 160 8.5 0.05 multiagent-branched-model-1-trening_wieloagentowy_z_galeziami_kolizji-Gr5_Cr200_Sw1.5_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms150_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P4000_T4-1500
+80 44 97 11.0 0.11 trening_wieloagentowy_v7-Gr5_Cr200_Sw5.0_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms100_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P4000_T4-2000
+429 138 457 34.5 0.08 trening_wieloagentowy_v7-Gr5_Cr200_Sw5.0_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms100_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P4000_T4-2000
+39 80 80 20.0 0.25 multiagent-branched-model-v3-trening_wieloagentowy_z_galeziami_kolizji-Gr5_Cr200_Sw1.5_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms150_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P2000_T4-1750
+216 150 286 37.5 0.13 multiagent-branched-model-v3-trening_wieloagentowy_z_galeziami_kolizji-Gr5_Cr200_Sw1.5_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms150_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P2000_T4-1750

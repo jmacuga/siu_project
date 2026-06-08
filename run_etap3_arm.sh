@@ -63,7 +63,7 @@ fi
 
 
 MODEL_NAME="model/trening_wieloagentowy_v7-Gr5_Cr200_Sw5.0_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms100_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P4000_T4-2000.tf"
-BRANCHED_MODEL_NAME="model/multiagent-branched-model-1-trening_wieloagentowy_z_galeziami_kolizji-Gr5_Cr200_Sw1.5_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms150_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P4000_T4-1500.tf"
+BRANCHED_MODEL_NAME="model/multiagent-branched-model-v3-trening_wieloagentowy_z_galeziami_kolizji-Gr5_Cr200_Sw1.5_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms150_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P2000_T4-1750.tf"
 
 COPY_CMD=""
 COPY_CSV_CMD=""
@@ -77,7 +77,7 @@ case $MODE in
         if [ -n "$BRANCHED" ]; then
             PY_SCRIPT="play-dqn.py --multi --detect_collision --branched --n_agents 8 --n_steps 2000 $BRANCHED_MODEL_NAME"
         else
-            PY_SCRIPT="play-dqn.py --multi --detect_collision --n_agents 16 --n_steps 2000 $MODEL_NAME"
+            PY_SCRIPT="play-dqn.py --multi --detect_collision --n_agents 8 --n_steps 2000 $MODEL_NAME"
         fi
         COPY_CMD="cp trasa_nr3.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
         COPY_CSV_CMD="cp scenariusz_wieloagentowy_v3.csv src/routes.csv"
