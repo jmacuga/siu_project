@@ -34,18 +34,19 @@ if [ -z "$ROS_SETUP" ]; then
     exit 1
 fi
 
+MODEL_NAME="model/trening_wieloagentowy_v7-Gr5_Cr200_Sw5.0_Sv-20.0_Sf-5.0_Dr2.0_Oo-100.0_Cd1.5_Ms100_Pb6_D0.99_E0.995_e0.1_M20000_m500_B32_U200_P4000_T4-2000.tf"
 COPY_CMD=""
 COPY_CSV_CMD=""
 case $MODE in
     train)
-        PY_SCRIPT="dqn_multi_handout.py"
+        PY_SCRIPT="dqn_multi.py"
         COPY_CMD="cp trasa_nr3.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
-        COPY_CSV_CMD="cp scenariusz_wieloagentowy.csv src/routes.csv"
+        COPY_CSV_CMD="cp scenariusz_wieloagentowy_v4.csv src/routes.csv"
         ;;
     eval)
-        PY_SCRIPT="play_multi_handout.py"
+        PY_SCRIPT="play-dqn.py --multi --detect_collision --n_agents 16 --n_steps 2000 $MODEL_NAME" 
         COPY_CMD="cp trasa_nr3.png /home/ubuntu/siu_ws/src/ros_tutorials/turtlesim/images/roads.png"
-        COPY_CSV_CMD="cp scenariusz_wieloagentowy.csv src/routes.csv"
+        COPY_CSV_CMD="cp scenariusz_wieloagentowy_v4.csv src/routes.csv"
         ;;
     *)
         echo "Nieznany argument: $MODE"
